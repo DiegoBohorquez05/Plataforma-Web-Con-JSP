@@ -45,7 +45,7 @@
             // IMPORTANTE: Cerrar conexión antes de redirigir para evitar errores de saturación
             conexion.close();
             
-            response.sendRedirect("dashboardAdmin.jsp?success=1"); 
+            response.sendRedirect("../dashboards/dashboardAdmin.jsp?success=1"); 
             
         } catch (Exception e) {
             // Si hay error, intentamos cerrar la conexión si sigue abierta
