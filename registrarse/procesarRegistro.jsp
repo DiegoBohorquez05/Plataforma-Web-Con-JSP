@@ -25,7 +25,7 @@
 
             if (filasInsertadas > 0) {
                 // Registro exitoso -> Redirigir al login con mensaje de éxito
-                response.sendRedirect("loginCliente.jsp?registro=exito");
+                response.sendRedirect("../logins/loginCliente.jsp?registro=exito");
             } else {
                 out.print("No se pudo completar el registro. Inténtalo de nuevo.");
             }
