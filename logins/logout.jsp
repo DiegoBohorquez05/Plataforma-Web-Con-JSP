@@ -10,5 +10,5 @@
     session.invalidate();
     
     // Regresar al inicio
-    response.sendRedirect("index.jsp");
+    response.sendRedirect("../index.jsp");
 %>

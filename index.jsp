@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="conexion.jspf" %>
+<%@ include file="./WEB-INF/conexion.jspf" %>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -29,14 +29,14 @@
     <div class="container">
         <a class="navbar-brand text-warning font-weight-bold" href="index.jsp">INMOHOME</a>
         <div class="ml-auto">
-            <a href="loginAdministrador.jsp" class="btn btn-sm btn-outline-warning mr-3"><i class="fas fa-user-shield"></i> Acceso Admin</a>
+            <a href="./logins/loginAdministrador.jsp" class="btn btn-sm btn-outline-warning mr-3"><i class="fas fa-user-shield"></i> Acceso Admin</a>
 
             <% if (session.getAttribute("nombreCliente") != null) { %>
                 <span class="text-white mr-3"><i class="fas fa-user-circle"></i> <%= session.getAttribute("nombreCliente") %></span>
-                <a href="misCitas.jsp" class="btn btn-sm btn-outline-light mr-2">Mis Citas</a>
-                <a href="logout.jsp" class="btn btn-sm btn-danger">Cerrar Sesión</a>
+                <a href="./citas/misCitas.jsp" class="btn btn-sm btn-outline-light mr-2">Mis Citas</a>
+                <a href="./logins/logout.jsp" class="btn btn-sm btn-danger">Cerrar Sesión</a>
             <% } else { %>
-                <a href="loginCliente.jsp" class="btn btn-sm btn-warning">Iniciar Sesión</a>
+                <a href="./logins/loginCliente.jsp" class="btn btn-sm btn-warning">Iniciar Sesión</a>
             <% } %>
         </div>
     </div>
@@ -89,7 +89,7 @@
                             <i class="fas fa-calendar-alt mr-2"></i>Solicitar Cita
                         </a>
                     <% } else { %>
-                        <a href="loginCliente.jsp" class="btn btn-outline-secondary btn-block">Inicia sesión para agendar</a>
+                        <a href="./login/loginCliente.jsp" class="btn btn-outline-secondary btn-block">Inicia sesión para agendar</a>
                     <% } %>
                 </div>
             </div>

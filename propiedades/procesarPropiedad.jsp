@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="conexion.jspf" %>
+<%@ include file="../WEB-INF/conexion.jspf" %>
 
 <%
     // 1. Captura de parámetros del formulario

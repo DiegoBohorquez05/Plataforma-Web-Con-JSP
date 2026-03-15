@@ -18,7 +18,7 @@
 <body>
 
     <div class="card shadow-lg p-4">
-        <a href="index.jsp" class="btn-back">
+        <a href="../index.jsp" class="btn-back">
             <i class="fas fa-arrow-left"></i> Volver a la página principal
         </a>
 
@@ -34,7 +34,7 @@
         <% } %>
 
         <%-- Formulario que envía a validarCliente.jsp --%>
-        <form action="validarCliente.jsp" method="POST">
+        <form action="./validarCliente.jsp" method="POST">
             <div class="form-group">
                 <label><i class="fas fa-envelope mr-2"></i>Correo Electrónico</label>
                 <input type="email" name="email" class="form-control" placeholder="ejemplo@correo.com" required>
@@ -50,7 +50,7 @@
 
         <div class="text-center">
             <p class="mb-1">¿No tienes una cuenta?</p>
-            <a href="registroCliente.jsp" class="btn btn-outline-secondary btn-sm px-4">Crear cuenta nueva</a>
+            <a href="../registrarse/registroCliente.jsp" class="btn btn-outline-secondary btn-sm px-4">Crear cuenta nueva</a>
         </div>
     </div>
 

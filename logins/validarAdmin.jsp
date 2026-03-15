@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="conexion.jspf" %>
+<%@ include file="../WEB-INF/conexion.jspf" %>
 
 <%
     // 1. Capturamos los datos del formulario de login
@@ -20,7 +20,7 @@
             if (rs.next()) {
                 // 3. Si los datos son correctos, creamos la sesión
                 session.setAttribute("usuarioAdmin", rs.getString("usuario"));
-                response.sendRedirect("dashboardAdmin.jsp");
+                response.sendRedirect("../dashboards/dashboardAdmin.jsp");
             } else {
                 // 4. Si fallan los datos, regresamos con error
                 response.sendRedirect("loginAdministrador.jsp?error=1");

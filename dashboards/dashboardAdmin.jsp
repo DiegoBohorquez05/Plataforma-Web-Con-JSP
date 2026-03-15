@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="conexion.jspf" %>
+<%@ include file="../WEB-INF/conexion.jspf" %>
 
 <%
     // VALIDACIÓN DE SESIÓN
@@ -30,8 +30,8 @@
         <nav class="col-md-2 sidebar p-4">
             <h4 class="text-warning mb-4"><i class="fas fa-home"></i> InmoHome</h4>
             <a href="dashboardAdmin.jsp" class="active"><i class="fas fa-building mr-2"></i> Propiedades</a>
-            <a href="index.jsp"><i class="fas fa-eye mr-2"></i> Ver Sitio</a>
-            <a href="logout.jsp" class="text-danger mt-5"><i class="fas fa-sign-out-alt mr-2"></i> Salir</a>
+            <a href="../index.jsp"><i class="fas fa-eye mr-2"></i> Ver Sitio</a>
+            <a href="../logins/logout.jsp" class="text-danger mt-5"><i class="fas fa-sign-out-alt mr-2"></i> Salir</a>
         </nav>
 
         <main class="main-content">
@@ -41,7 +41,7 @@
             <div class="card shadow-sm mb-5 border-primary">
                 <div class="card-header bg-primary text-white">Registrar Nueva Propiedad</div>
                 <div class="card-body">
-                    <form action="procesarPropiedad.jsp" method="POST" class="row">
+                    <form action="../propiedades/procesarPropiedad.jsp" method="POST" class="row">
                         <div class="col-md-4 mb-2"><input type="text" name="direccion" placeholder="Dirección" class="form-control" required></div>
                         <div class="col-md-3 mb-2">
                             <select name="estado" class="form-control" required>

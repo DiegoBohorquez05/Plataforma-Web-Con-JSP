@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="conexion.jspf" %>
+<%@ include file="../WEB-INF/conexion.jspf" %>
 
 <%
     // 1. Capturamos los datos del formulario de login de clientes
@@ -24,7 +24,7 @@
                 
                 // CERRAMOS la conexión antes de irnos para liberar espacio en Clever Cloud
                 conexion.close();
-                response.sendRedirect("index.jsp");
+                response.sendRedirect("../index.jsp");
             } else {
                 // 4. Login Fallido
                 conexion.close(); // También cerramos aquí

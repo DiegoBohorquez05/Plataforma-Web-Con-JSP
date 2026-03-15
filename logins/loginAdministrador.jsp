@@ -16,7 +16,7 @@
 <body>
 
     <div class="card shadow-lg p-4">
-        <a href="index.jsp" class="btn-back">
+        <a href="../index.jsp" class="btn-back">
             <i class="fas fa-arrow-left"></i> Volver al Inicio
         </a>
 
@@ -26,7 +26,7 @@
             <div class="alert alert-danger">Usuario o contraseña incorrectos.</div>
         <% } %>
 
-        <form action="validarAdmin.jsp" method="POST">
+        <form action="./validarAdmin.jsp" method="POST">
             <div class="form-group">
                 <label>Usuario</label>
                 <input type="text" name="adminUser" class="form-control" required>

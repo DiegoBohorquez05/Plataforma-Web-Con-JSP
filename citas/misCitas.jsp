@@ -1,10 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="conexion.jspf" %>
+<%@ include file="../WEB-INF/conexion.jspf" %>
 <%
     // Verificamos sesión activa para proteger la página
     Integer idCli = (Integer) session.getAttribute("idCliente");
     if (idCli == null) {
-        response.sendRedirect("loginCliente.jsp");
+        response.sendRedirect("../login/loginCliente.jsp");
         return;
     }
 %>
@@ -20,9 +20,9 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand text-warning font-weight-bold" href="index.jsp">INMOHOME</a>
+        <a class="navbar-brand text-warning font-weight-bold" href="../index.jsp">INMOHOME</a>
         <div class="ml-auto">
-            <a href="index.jsp" class="btn btn-outline-light btn-sm">Volver al Inicio</a>
+            <a href="../index.jsp" class="btn btn-outline-light btn-sm">Volver al Inicio</a>
         </div>
     </div>
 </nav>

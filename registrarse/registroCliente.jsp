@@ -17,7 +17,7 @@
 <body>
 
     <div class="card shadow-lg p-4">
-        <a href="loginCliente.jsp" class="btn-back mb-3">
+        <a href="../logins/loginCliente.jsp" class="btn-back mb-3">
             <i class="fas fa-chevron-left"></i> Volver al login
         </a>
 
@@ -27,7 +27,7 @@
         </div>
 
         <%-- Formulario que envía los datos a un procesador de registro --%>
-        <form action="procesarRegistro.jsp" method="POST">
+        <form action="./procesarRegistro.jsp" method="POST">
             <div class="form-group">
                 <label><i class="fas fa-user mr-2"></i>Nombre Completo</label>
                 <input type="text" name="nombre" class="form-control" placeholder="Juan Pérez" required>
@@ -56,7 +56,7 @@
         </form>
 
         <div class="text-center mt-4">
-            <p class="small">¿Ya tienes cuenta? <a href="loginCliente.jsp" class="text-success font-weight-bold">Inicia sesión aquí</a></p>
+            <p class="small">¿Ya tienes cuenta? <a href="../logins/loginCliente.jsp" class="text-success font-weight-bold">Inicia sesión aquí</a></p>
         </div>
     </div>
 
