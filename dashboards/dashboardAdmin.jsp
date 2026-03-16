@@ -126,7 +126,7 @@
                             <td><%= rsProp.getString("ciudad") %></td>
                             <td><strong>$ <%= String.format("%,.0f", rsProp.getDouble("precio")) %></strong></td>
                             <td>
-                                <a href="../dashboard/dashboardAdmin.jsp?editId=<%= rsProp.getInt("id_propiedad") %>" class="text-warning mr-3" title="Editar"><i class="fas fa-edit"></i></a>
+                                <a href="dashboardAdmin.jsp?editId=<%= rsProp.getInt("id_propiedad") %>" class="text-warning mr-3" title="Editar"><i class="fas fa-edit"></i></a>
                                 <a href="../propiedades/eliminarPropiedad.jsp?id=<%= rsProp.getInt("id_propiedad") %>" class="text-danger" onclick="return confirm('¿Eliminar propiedad?')" title="Eliminar"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
