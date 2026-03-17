@@ -3,42 +3,42 @@
 <%@ include file="../WEB-INF/conexion.jspf" %>
 
 <%
-    // 1. VERIFICACIÓN DE SESIÓN
-    Integer idInmoSesion = (Integer) session.getAttribute("idInmobiliaria");
-    if (idInmoSesion == null) {
+    // 1. VALIDACIÓN DE SESIÓN
+    Integer idInmo = (Integer) session.getAttribute("idInmobiliaria");
+    if (idInmo == null) {
         response.sendRedirect("../logins/loginInmobiliaria.jsp");
         return;
     }
+    String nombreInmo = (String) session.getAttribute("nombreInmo");
 
-    // 2. LÓGICA PARA CAPTURAR DATOS SI SE VA A EDITAR
-    int idEdit = 0;
-    String dDireccion = "", dCiudad = "", dEstado = "Disponible", dDescripcion = "";
-    double dPrecio = 0;
-    boolean editando = false;
+    // 2. LÓGICA DE EDICIÓN UNIFICADA
+    String idEdit = request.getParameter("editId");
+    String tituloForm = "Publicar Propiedad";
+    String colorHeader = "bg-info";
+    String actionForm = "procesarPropiedad.jsp"; // Archivo para guardar nuevo
+    
+    String edDireccion = "", edCiudad = "", edDesc = "", edEstado = "Disponible";
+    double edPrecio = 0;
 
-    if (request.getParameter("id_edit") != null) {
+    // Si detectamos un ID para editar, cargamos los datos
+    if (idEdit != null && !idEdit.isEmpty()) {
+        tituloForm = "Editando Propiedad ID: " + idEdit;
+        colorHeader = "bg-warning text-dark";
+        actionForm = "modificarPropiedad.jsp"; // Archivo para actualizar existente
+        
         try {
-            idEdit = Integer.parseInt(request.getParameter("id_edit"));
-            editando = true;
-            
-            String sqlEdit = "SELECT * FROM propiedades WHERE id_propiedad = ? AND fk_inmobiliaria = ?";
-            PreparedStatement psEdit = conexion.prepareStatement(sqlEdit);
-            psEdit.setInt(1, idEdit);
-            psEdit.setInt(2, idInmoSesion);
-            ResultSet rsEdit = psEdit.executeQuery();
-            
-            if (rsEdit.next()) {
-                dDireccion = rsEdit.getString("direccion");
-                dCiudad = rsEdit.getString("ciudad");
-                dEstado = rsEdit.getString("estado");
-                dPrecio = rsEdit.getDouble("precio");
-                dDescripcion = rsEdit.getString("descripcion");
+            String sqlEd = "SELECT * FROM propiedades WHERE id_propiedad = ?";
+            PreparedStatement psEd = conexion.prepareStatement(sqlEd);
+            psEd.setInt(1, Integer.parseInt(idEdit));
+            ResultSet rsEd = psEd.executeQuery();
+            if(rsEd.next()){
+                edDireccion = rsEd.getString("direccion");
+                edCiudad = rsEd.getString("ciudad");
+                edPrecio = rsEd.getDouble("precio");
+                edDesc = rsEd.getString("descripcion");
+                edEstado = rsEd.getString("estado");
             }
-            rsEdit.close();
-            psEdit.close();
-        } catch (Exception e) {
-            System.out.println("Error al cargar datos: " + e.getMessage());
-        }
+        } catch(Exception e) { }
     }
 %>
 
@@ -46,156 +46,151 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel Inmobiliaria - InmoHome</title>
+    <title>Panel InmoHome</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        body { background-color: #f4f7f6; }
-        .navbar { background-color: #17a2b8; }
-        .card-header { font-weight: bold; }
-        .btn-header { transition: all 0.3s; }
-        .btn-header:hover { transform: translateY(-1px); }
+        body { background-color: #f8f9fa; }
+        .navbar-inmo { background: #2c3e50; color: white; }
+        .card { border: none; shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); margin-bottom: 20px; }
+        .section-title { border-left: 5px solid #17a2b8; padding-left: 15px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-dark mb-4 shadow-sm">
-        <a class="navbar-brand font-weight-bold" href="#">
-            <i class="fas fa-building"></i> Panel Inmobiliaria: <%= session.getAttribute("nombreInmo") %>
-        </a>
+<nav class="navbar navbar-dark navbar-inmo shadow-sm mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="../index.jsp">INMOHOME</a>
         <div class="ml-auto">
-            <a href="../index.jsp" class="btn btn-info btn-sm btn-header border-light mr-2">
-                <i class="fas fa-eye"></i> Ver Sitio Público
-            </a>
-            <a href="../logins/logout.jsp" class="btn btn-outline-light btn-sm btn-header">
-    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-</a>
-        </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            
-            <div class="col-md-4">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header <%= editando ? "bg-warning text-dark" : "bg-info text-white" %>">
-                        <i class="fas <%= editando ? "fa-edit" : "fa-plus-circle" %>"></i> 
-                        <%= editando ? "Modificar Propiedad ID: " + idEdit : "Publicar Nueva Propiedad" %>
-                    </div>
-                    <div class="card-body">
-                        <form action="<%= editando ? "../propiedades/actualizarPropiedad.jsp" : "../propiedades/procesarPropiedad.jsp" %>" method="POST">
-                            
-                            <% if(editando) { %> 
-                                <input type="hidden" name="id_propiedad" value="<%= idEdit %>"> 
-                            <% } %>
-                            <input type="hidden" name="fk_inmo" value="<%= idInmoSesion %>">
-
-                            <div class="form-group">
-                                <label class="small font-weight-bold">Dirección</label>
-                                <input type="text" name="direccion" class="form-control" value="<%= dDireccion %>" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="small font-weight-bold">Ciudad</label>
-                                <input type="text" name="ciudad" class="form-control" value="<%= dCiudad %>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="small font-weight-bold">Precio ($)</label>
-                                <input type="number" name="precio" class="form-control" value="<%= (int)dPrecio %>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="small font-weight-bold">Estado</label>
-                                <select name="estado" class="form-control">
-                                    <option value="Disponible" <%= dEstado.equals("Disponible") ? "selected" : "" %>>Disponible</option>
-                                    <option value="Arrendado" <%= dEstado.equals("Arrendado") ? "selected" : "" %>>Arrendado</option>
-                                    <option value="Vendido" <%= dEstado.equals("Vendido") ? "selected" : "" %>>Vendido</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="small font-weight-bold">Descripción</label>
-                                <textarea name="descripcion" class="form-control" rows="3" placeholder="Detalles del inmueble..." required><%= dDescripcion %></textarea>
-                            </div>
-
-                            <button type="submit" class="btn <%= editando ? "btn-warning" : "btn-info" %> btn-block font-weight-bold shadow-sm">
-                                <%= editando ? "GUARDAR CAMBIOS" : "PUBLICAR INMUEBLE" %>
-                            </button>
-                            
-                            <% if(editando) { %>
-                                <a href="dashboardInmo.jsp" class="btn btn-link btn-block btn-sm text-muted mt-2">Cancelar edición</a>
-                            <% } %>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-8">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-dark text-white">
-                        Mis Propiedades Publicadas
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th>Dirección</th>
-                                    <th>Ciudad</th>
-                                    <th>Precio</th>
-                                    <th class="text-center">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <%
-                                    try {
-                                        String sql = "SELECT * FROM propiedades WHERE fk_inmobiliaria = ? ORDER BY id_propiedad DESC";
-                                        PreparedStatement ps = conexion.prepareStatement(sql);
-                                        ps.setInt(1, idInmoSesion);
-                                        ResultSet rs = ps.executeQuery();
-
-                                        while(rs.next()) {
-                                %>
-                                <tr>
-                                    <td><%= rs.getString("direccion") %></td>
-                                    <td><%= rs.getString("ciudad") %></td>
-                                    <td class="text-success font-weight-bold">$<%= String.format("%,.0f", rs.getDouble("precio")) %></td>
-                                    <td class="text-center">
-                                        <a href="dashboardInmo.jsp?id_edit=<%= rs.getInt("id_propiedad") %>" class="text-warning mr-3" title="Editar">
-                                            <i class="fas fa-edit fa-lg"></i>
-                                        </a>
-                                        <a href="../propiedades/eliminarPropiedad.jsp?id=<%= rs.getInt("id_propiedad") %>" 
-                                           class="text-danger" title="Eliminar"
-                                           onclick="return confirm('¿Estás seguro de eliminar esta propiedad?')">
-                                            <i class="fas fa-trash-alt fa-lg"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                <% 
-                                        }
-                                        rs.close();
-                                        ps.close();
-                                    } catch (Exception e) {
-                                        out.print("<tr><td colspan='4'>Error al listar: " + e.getMessage() + "</td></tr>");
-                                    }
-                                %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
+            <span class="text-white mr-3">Hola, <strong><%= nombreInmo %></strong></span>
+            <a href="../logins/logout.jsp" class="btn btn-outline-light btn-sm">Cerrar Sesión</a>
         </div>
     </div>
+</nav>
 
-    <%-- CIERRE DE CONEXIÓN --%>
-    <%
-        if (conexion != null && !conexion.isClosed()) {
-            conexion.close();
-        }
-    %>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header <%= colorHeader %> font-weight-bold">
+                    <i class="fas fa-edit"></i> <%= tituloForm %>
+                </div>
+                <div class="card-body">
+                    <form action="<%= actionForm %>" method="POST">
+                        <% if(idEdit != null) { %>
+                            <input type="hidden" name="id_propiedad" value="<%= idEdit %>">
+                        <% } %>
+                        <div class="form-group small">
+                            <label>Dirección</label>
+                            <input type="text" name="direccion" class="form-control" value="<%= edDireccion %>" required>
+                        </div>
+                        <div class="form-group small">
+                            <label>Ciudad</label>
+                            <input type="text" name="ciudad" class="form-control" value="<%= edCiudad %>" required>
+                        </div>
+                        <div class="form-group small">
+                            <label>Precio</label>
+                            <input type="number" name="precio" class="form-control" value="<%= (int)edPrecio %>" required>
+                        </div>
+                        <div class="form-group small">
+                            <label>Estado</label>
+                            <select name="estado" class="form-control">
+                                <option value="Disponible" <%= edEstado.equals("Disponible")?"selected":"" %>>Disponible</option>
+                                <option value="Arrendado" <%= edEstado.equals("Arrendado")?"selected":"" %>>Arrendado</option>
+                                <option value="Vendido" <%= edEstado.equals("Vendido")?"selected":"" %>>Vendido</option>
+                            </select>
+                        </div>
+                        <div class="form-group small">
+                            <label>Descripción</label>
+                            <textarea name="descripcion" class="form-control" rows="3"><%= edDesc %></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-block font-weight-bold <%= idEdit != null ? "btn-warning" : "btn-info" %>">
+                            <%= idEdit != null ? "Guardar Cambios" : "Publicar Inmueble" %>
+                        </button>
+                        <% if(idEdit != null) { %>
+                            <a href="dashboardInmo.jsp" class="btn btn-link btn-block btn-sm text-muted">Cancelar</a>
+                        <% } %>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="col-md-8">
+            <h4 class="section-title">Gestión de Citas</h4>
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="thead-dark small">
+                            <tr><th>Cliente</th><th>Ciudad</th><th>Estado</th><th>Acción</th></tr>
+                        </thead>
+                        <tbody>
+                            <%
+                                try {
+                                    String sqlCit = "SELECT c.id_cita, cl.nombre, p.ciudad, c.estado FROM citas c " +
+                                                   "JOIN clientes cl ON c.id_cliente = cl.id_cliente " +
+                                                   "JOIN propiedades p ON c.id_propiedad = p.id_propiedad " +
+                                                   "WHERE p.fk_inmobiliaria = ?";
+                                    PreparedStatement psCit = conexion.prepareStatement(sqlCit);
+                                    psCit.setInt(1, idInmo);
+                                    ResultSet rsCit = psCit.executeQuery();
+                                    while(rsCit.next()){
+                            %>
+                            <tr class="small">
+                                <td><%= rsCit.getString("nombre") %></td>
+                                <td><%= rsCit.getString("ciudad") %></td>
+                                <td><span class="badge badge-secondary"><%= rsCit.getString("estado") %></span></td>
+                                <td>
+                                    <form action="../citas/actualizarCita.jsp" method="POST">
+                                        <input type="hidden" name="id_cita" value="<%= rsCit.getInt("id_cita") %>">
+                                        <select name="nuevo_estado" class="form-control form-control-sm" onchange="this.form.submit()">
+                                            <option value="" disabled selected>Cambiar...</option>
+                                            <option value="Pendiente">Pendiente</option>
+                                            <option value="Realizada">Realizada</option>
+                                            <option value="Cancelada">Cancelada</option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% } } catch(Exception e) { out.print(e.getMessage()); } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h4 class="section-title">Mis Propiedades</h4>
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="bg-light small">
+                            <tr><th>Dirección</th><th>Precio</th><th>Estado</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody>
+                            <%
+                                try {
+                                    String sqlP = "SELECT * FROM propiedades WHERE fk_inmobiliaria = ? ORDER BY id_propiedad DESC";
+                                    PreparedStatement psP = conexion.prepareStatement(sqlP);
+                                    psP.setInt(1, idInmo);
+                                    ResultSet rsP = psP.executeQuery();
+                                    while(rsP.next()){
+                            %>
+                            <tr class="small">
+                                <td><%= rsP.getString("direccion") %></td>
+                                <td>$<%= String.format("%,.0f", rsP.getDouble("precio")) %></td>
+                                <td><span class="badge badge-warning"><%= rsP.getString("estado") %></span></td>
+                                <td>
+                                    <a href="dashboardInmo.jsp?editId=<%= rsP.getInt("id_propiedad") %>" class="text-warning mr-2"><i class="fas fa-edit"></i></a>
+                                    <a href="../propiedades/eliminarPropiedad.jsp?id=<%= rsP.getInt("id_propiedad") %>" class="text-danger" onclick="return confirm('¿Eliminar?')"><i class="fas fa-trash"></i></a>
+                                </td>
+                            </tr>
+                            <% } } catch(Exception e) { } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% if (conexion != null) conexion.close(); %>
 </body>
 </html>

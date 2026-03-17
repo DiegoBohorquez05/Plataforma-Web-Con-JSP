@@ -59,7 +59,7 @@
                         <i class="fas fa-user-shield"></i> Admin
                     </a>
                     <a href="./logins/loginCliente.jsp" class="btn btn-sm btn-warning">
-                        <i class="fas fa-user"></i> Iniciar Sesión Cliente
+                        <i class="fas fa-user"></i> Clientes
                     </a>
                 <% } %>
             <% } %>
@@ -89,12 +89,6 @@
                 <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" class="d-block w-100">
             </div>
         </div>
-        <a class="carousel-control-prev" href="#carouselInmo" data-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </a>
-        <a class="carousel-control-next" href="#carouselInmo" data-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </a>
     </div>
 
     <%-- FILTROS --%>
@@ -133,7 +127,6 @@
                     String fEstado = request.getParameter("f_estado");
                     String precioStr = request.getParameter("f_precio");
                     
-                    // SQL MODIFICADO PARA JOIN CON LA TABLA CORRECTA
                     String sql = "SELECT p.*, i.nombre_empresa FROM propiedades p " +
                                  "LEFT JOIN inmobiliaria i ON p.fk_inmobiliaria = i.id_inmobiliaria " +
                                  "WHERE 1=1";
@@ -156,34 +149,17 @@
                 <div class="card-body">
                     <span class="badge badge-warning mb-2"><%= rs.getString("estado") %></span>
                     <h4 class="card-title font-weight-bold"><%= rs.getString("ciudad") %></h4>
-                    
-                    <p class="small text-primary mb-2">
-                        <i class="fas fa-building"></i> 
-                        <strong><%= nombreInmo %></strong>
-                    </p>
-                    
-                    <p class="text-muted small">
-                        <i class="fas fa-map-marker-alt"></i> <%= rs.getString("direccion") %>
-                    </p>
-                    
-                    <h5 class="font-weight-bold text-success">
-                        $ <%= String.format("%,.0f", rs.getDouble("precio")) %>
-                    </h5>
-                    
-                    <p class="small text-secondary text-truncate" title="<%= rs.getString("descripcion") %>">
-                        <%= rs.getString("descripcion") %>
-                    </p>
-                    
+                    <p class="small text-primary mb-2"><i class="fas fa-building"></i> <strong><%= nombreInmo %></strong></p>
+                    <p class="text-muted small"><i class="fas fa-map-marker-alt"></i> <%= rs.getString("direccion") %></p>
+                    <h5 class="font-weight-bold text-success">$ <%= String.format("%,.0f", rs.getDouble("precio")) %></h5>
+                    <p class="small text-secondary text-truncate" title="<%= rs.getString("descripcion") %>"><%= rs.getString("descripcion") %></p>
                     <hr>
-
                     <% if (session.getAttribute("idCliente") != null) { %>
-                        <a href="citas/agendarCita.jsp?id_propiedad=<%= rs.getInt("id_propiedad") %>" 
-                           class="btn btn-primary btn-block shadow-sm">
+                        <a href="citas/agendarCita.jsp?id_propiedad=<%= rs.getInt("id_propiedad") %>" class="btn btn-primary btn-block shadow-sm">
                            <i class="far fa-calendar-alt"></i> Solicitar Cita
                         </a>
                     <% } else { %>
-                        <a href="./logins/loginCliente.jsp" 
-                           class="btn btn-outline-secondary btn-block">
+                        <a href="./logins/loginCliente.jsp" class="btn btn-outline-secondary btn-block">
                            <i class="fas fa-user-lock"></i> Inicia sesión para agendar
                         </a>
                     <% } %>
@@ -201,7 +177,7 @@
 
     <hr class="my-5">
 
-    <%-- SECCIÓN DE OPINIONES --%>
+    <%-- SECCIÓN DE OPINIONES EXISTENTES --%>
     <h3 class="text-center mb-4">Opiniones de nuestros clientes</h3>
     <div class="row">
         <% 
@@ -223,6 +199,35 @@
         </div>
         <% } stRes.close(); } catch (Exception e) { } } %>
     </div>
+
+    <%-- FORMULARIO PARA AGREGAR RESEÑA (RESTAURADO) --%>
+    <% if (session.getAttribute("idCliente") != null) { %>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8">
+                <div class="form-resena">
+                    <h4 class="text-center mb-4"><i class="fas fa-pen-nib text-warning"></i> Déjanos tu opinión</h4>
+                    <form action="reseñas/guardarResena.jsp" method="POST">
+                        <div class="form-group">
+                            <label class="font-weight-bold small">Tu experiencia:</label>
+                            <textarea name="comentario" class="form-control" rows="3" placeholder="Cuéntanos qué te pareció el servicio..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold small">Puntuación:</label>
+                            <select name="puntuacion" class="form-control" required>
+                                <option value="5">5 estrellas (Excelente)</option>
+                                <option value="4">4 estrellas (Muy bueno)</option>
+                                <option value="3">3 estrellas (Bueno)</option>
+                                <option value="2">2 estrellas (Regular)</option>
+                                <option value="1">1 estrella (Malo)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-block font-weight-bold">Publicar Reseña</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
 </div> 
 
 <footer class="bg-dark text-white text-center py-4 mt-5">
@@ -232,7 +237,6 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<%-- CIERRE DE CONEXIÓN --%>
 <%
     if (conexion != null && !conexion.isClosed()) {
         conexion.close();

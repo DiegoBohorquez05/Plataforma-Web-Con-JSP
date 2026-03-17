@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="./WEB-INF/conexion.jspf" %>
+<%@ include file="../WEB-INF/conexion.jspf" %>
 <%
     try {
         // Captura de datos
