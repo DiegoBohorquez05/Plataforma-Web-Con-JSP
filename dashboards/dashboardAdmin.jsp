@@ -59,47 +59,57 @@
             <h2>Gestión Administrativa</h2>
             <hr>
 
-            <div class="card shadow-sm mb-5 <%= editando ? "card-edit" : "border-primary" %>">
-                <div class="card-header <%= editando ? "bg-warning text-dark" : "bg-primary text-white" %>">
-                    <%= editando ? "<b>Editando Propiedad ID: " + idEdit + "</b>" : "Registrar Nueva Propiedad" %>
-                    <% if(editando) { %> <a href="./dashboardAdmin.jsp" class="float-right text-dark small">Cancelar edición</a> <% } %>
-                </div>
-                <div class="card-body">
-                    <form action="<%= editando ? "../propiedades/actualizarPropiedad.jsp" : "../propiedades/procesarPropiedad.jsp" %>" method="POST" class="row">
-                        <% if(editando) { %> <input type="hidden" name="id_propiedad" value="<%= idEdit %>"> <% } %>
-                        
-                        <div class="col-md-3 mb-2">
-                            <label class="small font-weight-bold">Dirección</label>
-                            <input type="text" name="direccion" class="form-control" value="<%= dDireccion %>" required>
-                        </div>
-                        <div class="col-md-2 mb-2">
-                            <label class="small font-weight-bold">Estado</label>
-                            <select name="estado" class="form-control" required>
-                                <option value="Disponible" <%= dEstado.equals("Disponible") ? "selected" : "" %>>Disponible</option>
-                                <option value="Arrendado" <%= dEstado.equals("Arrendado") ? "selected" : "" %>>Arrendado</option>
-                                <option value="Vendido" <%= dEstado.equals("Vendido") ? "selected" : "" %>>Vendido</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-2">
-                            <label class="small font-weight-bold">Ciudad</label>
-                            <input type="text" name="ciudad" class="form-control" value="<%= dCiudad %>" required>
-                        </div>
-                        <div class="col-md-2 mb-2">
-                            <label class="small font-weight-bold">Precio ($)</label>
-                            <input type="number" name="precio" class="form-control" value="<%= dPrecio %>" required>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <label class="small">&nbsp;</label>
-                            <button type="submit" class="btn <%= editando ? "btn-warning" : "btn-success" %> btn-block">
-                                <%= editando ? "Actualizar Cambios" : "Guardar Propiedad" %>
-                            </button>
-                        </div>
-                        <div class="col-md-12">
-                            <textarea name="descripcion" placeholder="Descripción breve..." class="form-control" rows="2"><%= dDescripcion %></textarea>
-                        </div>
-                    </form>
-                </div>
+            <%-- Eliminamos la lógica de alternancia y dejamos solo la estructura de edición --%>
+<div class="card shadow-sm mb-5 card-edit">
+    <div class="card-header bg-warning text-dark">
+        <i class="fas fa-edit"></i> 
+        <b>Editando Propiedad ID: <%= (idEdit != null) ? idEdit : "0" %></b>
+        <a href="./dashboardAdmin.jsp" class="float-right text-dark small">Cancelar edición</a>
+    </div>
+    <div class="card-body">
+        <%-- El action apunta directamente al archivo de actualización --%>
+        <form action="../propiedades/actualizarPropiedad.jsp" method="POST" class="row">
+            <%-- Campo oculto vital para saber qué registro modificar --%>
+            <input type="hidden" name="id_propiedad" value="<%= idEdit %>">
+            
+            <div class="col-md-3 mb-2">
+                <label class="small font-weight-bold">Dirección</label>
+                <input type="text" name="direccion" class="form-control" value="<%= dDireccion %>" required>
             </div>
+            
+            <div class="col-md-2 mb-2">
+                <label class="small font-weight-bold">Estado</label>
+                <select name="estado" class="form-control" required>
+                    <option value="Disponible" <%= dEstado.equals("Disponible") ? "selected" : "" %>>Disponible</option>
+                    <option value="Arrendado" <%= dEstado.equals("Arrendado") ? "selected" : "" %>>Arrendado</option>
+                    <option value="Vendido" <%= dEstado.equals("Vendido") ? "selected" : "" %>>Vendido</option>
+                </select>
+            </div>
+            
+            <div class="col-md-2 mb-2">
+                <label class="small font-weight-bold">Ciudad</label>
+                <input type="text" name="ciudad" class="form-control" value="<%= dCiudad %>" required>
+            </div>
+            
+            <div class="col-md-2 mb-2">
+                <label class="small font-weight-bold">Precio ($)</label>
+                <input type="number" name="precio" class="form-control" value="<%= dPrecio %>" required>
+            </div>
+            
+            <div class="col-md-3 mb-2">
+                <label class="small">&nbsp;</label>
+                <button type="submit" class="btn btn-warning btn-block font-weight-bold">
+                    ACTUALIZAR CAMBIOS
+                </button>
+            </div>
+            
+            <div class="col-md-12">
+                <label class="small font-weight-bold">Descripción del Inmueble</label>
+                <textarea name="descripcion" placeholder="Descripción detallada..." class="form-control" rows="3"><%= dDescripcion %></textarea>
+            </div>
+        </form>
+    </div>
+</div>
 
             <div class="card shadow mb-5">
                 <div class="card-header bg-dark text-white">Propiedades en el Sistema</div>

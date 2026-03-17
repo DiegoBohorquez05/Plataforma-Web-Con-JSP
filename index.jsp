@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.sql.*" %>
 <%@ include file="./WEB-INF/conexion.jspf" %>
 
 <!DOCTYPE html>
@@ -37,15 +38,25 @@
                 <span class="text-white small mr-2">| Modo Admin Activo |</span>
                 <a href="./logins/logout.jsp" class="btn btn-sm btn-danger">Cerrar Sesión</a>
 
-            <%-- 2. LÓGICA PARA EL CLIENTE --%>
+            <%-- 2. LÓGICA PARA INMOBILIARIA --%>
+            <% } else if (session.getAttribute("idInmobiliaria") != null) { %>
+                <a href="dashboards/dashboardInmo.jsp" class="btn btn-sm btn-info mr-3">
+                    <i class="fas fa-building"></i> Panel Inmobiliaria
+                </a>
+                <a href="./logins/logout.jsp" class="btn btn-sm btn-danger">Cerrar Sesión</a>
+
+            <%-- 3. LÓGICA PARA EL CLIENTE O VISITANTE --%>
             <% } else { %>
                 <% if (session.getAttribute("nombreCliente") != null) { %>
                     <span class="text-white mr-3"><i class="fas fa-user-circle"></i> <%= session.getAttribute("nombreCliente") %></span>
                     <a href="./citas/misCitas.jsp" class="btn btn-sm btn-outline-light mr-2">Mis Citas</a>
                     <a href="./logins/logout.jsp" class="btn btn-sm btn-danger">Cerrar Sesión</a>
                 <% } else { %>
-                    <a href="./logins/loginAdministrador.jsp" class="btn btn-sm btn-outline-warning mr-3">
-                        <i class="fas fa-user-shield"></i> Acceso Admin
+                    <a href="./logins/loginInmobiliaria.jsp" class="btn btn-sm btn-outline-info mr-2">
+                        <i class="fas fa-building"></i> Inmobiliarias
+                    </a>
+                    <a href="./logins/loginAdministrador.jsp" class="btn btn-sm btn-outline-warning mr-2">
+                        <i class="fas fa-user-shield"></i> Admin
                     </a>
                     <a href="./logins/loginCliente.jsp" class="btn btn-sm btn-warning">
                         <i class="fas fa-user"></i> Iniciar Sesión Cliente
@@ -121,31 +132,60 @@
                     String ciudad = request.getParameter("f_ciudad");
                     String fEstado = request.getParameter("f_estado");
                     String precioStr = request.getParameter("f_precio");
-                    String sql = "SELECT * FROM propiedades WHERE 1=1";
-                    if(ciudad != null && !ciudad.isEmpty()) { sql += " AND ciudad LIKE '%" + ciudad + "%'"; }
-                    if(fEstado != null && !fEstado.isEmpty()) { sql += " AND estado = '" + fEstado + "'"; }
-                    if(precioStr != null && !precioStr.isEmpty()) { sql += " AND precio <= " + precioStr; }
-                    sql += " ORDER BY id_propiedad DESC";
+                    
+                    // SQL MODIFICADO PARA JOIN CON LA TABLA CORRECTA
+                    String sql = "SELECT p.*, i.nombre_empresa FROM propiedades p " +
+                                 "LEFT JOIN inmobiliaria i ON p.fk_inmobiliaria = i.id_inmobiliaria " +
+                                 "WHERE 1=1";
+                    
+                    if(ciudad != null && !ciudad.isEmpty()) { sql += " AND p.ciudad LIKE '%" + ciudad + "%'"; }
+                    if(fEstado != null && !fEstado.isEmpty()) { sql += " AND p.estado = '" + fEstado + "'"; }
+                    if(precioStr != null && !precioStr.isEmpty()) { sql += " AND p.precio <= " + precioStr; }
+                    sql += " ORDER BY p.id_propiedad DESC";
 
                     Statement st = conexion.createStatement();
                     ResultSet rs = st.executeQuery(sql);
                     boolean hayResultados = false;
                     while (rs.next()) {
                         hayResultados = true;
+                        String nombreInmo = rs.getString("nombre_empresa");
+                        if(nombreInmo == null) nombreInmo = "InmoHome Oficial";
         %>
         <div class="col-md-4 mb-4">
-            <div class="card card-propiedad h-100">
+            <div class="card card-propiedad h-100 shadow-sm">
                 <div class="card-body">
                     <span class="badge badge-warning mb-2"><%= rs.getString("estado") %></span>
-                    <h4 class="card-title"><%= rs.getString("ciudad") %></h4>
-                    <p class="text-muted"><i class="fas fa-map-marker-alt"></i> <%= rs.getString("direccion") %></p>
-                    <p class="font-weight-bold text-success">$ <%= String.format("%,.0f", rs.getDouble("precio")) %></p>
-                    <p class="small text-secondary"><%= rs.getString("descripcion") %></p>
+                    <h4 class="card-title font-weight-bold"><%= rs.getString("ciudad") %></h4>
+                    
+                    <p class="small text-primary mb-2">
+                        <i class="fas fa-building"></i> 
+                        <strong><%= nombreInmo %></strong>
+                    </p>
+                    
+                    <p class="text-muted small">
+                        <i class="fas fa-map-marker-alt"></i> <%= rs.getString("direccion") %>
+                    </p>
+                    
+                    <h5 class="font-weight-bold text-success">
+                        $ <%= String.format("%,.0f", rs.getDouble("precio")) %>
+                    </h5>
+                    
+                    <p class="small text-secondary text-truncate" title="<%= rs.getString("descripcion") %>">
+                        <%= rs.getString("descripcion") %>
+                    </p>
+                    
                     <hr>
+
                     <% if (session.getAttribute("idCliente") != null) { %>
-                        <a href="citas/agendarCita.jsp?id_propiedad=<%= rs.getInt("id_propiedad") %>" class="btn btn-primary btn-block">Solicitar Cita</a>
+                        <a href="citas/agendarCita.jsp?id_propiedad=<%= rs.getInt("id_propiedad") %>" 
+                           class="btn btn-primary btn-block shadow-sm">
+                           <i class="far fa-calendar-alt"></i> Solicitar Cita
+                        </a>
                     <% } else { %>
-                        <a href="./logins/loginCliente.jsp" class="btn btn-outline-secondary btn-block">Inicia sesión</a>
+                        <a href="./logins/loginCliente.jsp" 
+                           class="btn btn-outline-secondary btn-block">
+                           <i class="fas fa-user-lock"></i> Inicia sesión para agendar
+                        </a>
                     <% } %>
                 </div>
             </div>
@@ -154,14 +194,14 @@
                     }
                     if(!hayResultados) { out.print("<div class='col-12 text-center'><p class='alert alert-info'>No se encontraron inmuebles.</p></div>"); }
                     st.close();
-                } catch (Exception e) { out.print("<p>Error: " + e.getMessage() + "</p>"); }
+                } catch (Exception e) { out.print("<p class='alert alert-danger'>Error: " + e.getMessage() + "</p>"); }
             } 
         %>
     </div>
 
     <hr class="my-5">
 
-    <%-- SECCIÓN DE OPINIONES EXISTENTES --%>
+    <%-- SECCIÓN DE OPINIONES --%>
     <h3 class="text-center mb-4">Opiniones de nuestros clientes</h3>
     <div class="row">
         <% 
@@ -183,36 +223,7 @@
         </div>
         <% } stRes.close(); } catch (Exception e) { } } %>
     </div>
-
-    <%-- FORMULARIO PARA AGREGAR RESEÑA --%>
-    <% if (session.getAttribute("idCliente") != null && session.getAttribute("usuarioAdmin") == null) { %>
-        <div class="row justify-content-center mt-5">
-            <div class="col-md-8">
-                <div class="form-resena">
-                    <h4 class="text-center mb-4"><i class="fas fa-pen-nib text-warning"></i> Déjanos tu opinión</h4>
-                    <form action="reseñas/guardarResena.jsp" method="POST">
-                        <div class="form-group">
-                            <label class="font-weight-bold small">Tu experiencia:</label>
-                            <textarea name="comentario" class="form-control" rows="3" placeholder="Cuéntanos qué te pareció el servicio..." required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="font-weight-bold small">Puntuación:</label>
-                            <select name="puntuacion" class="form-control" required>
-                                <option value="5">5 estrellas (Excelente)</option>
-                                <option value="4">4 estrellas (Muy bueno)</option>
-                                <option value="3">3 estrellas (Bueno)</option>
-                                <option value="2">2 estrellas (Regular)</option>
-                                <option value="1">1 estrella (Malo)</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-warning btn-block font-weight-bold">Publicar Reseña</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    <% } %>
-
-</div> <%-- Fin container --%>
+</div> 
 
 <footer class="bg-dark text-white text-center py-4 mt-5">
     <p>© 2026 InmoHome Profesional - Calidad y Confianza.</p>
@@ -221,10 +232,11 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<%-- CIERRE DE CONEXIÓN --%>
 <%
-        if (conexion != null && !conexion.isClosed()) {
-            conexion.close();
-        }
-    %>
+    if (conexion != null && !conexion.isClosed()) {
+        conexion.close();
+    }
+%>
 </body>
 </html>
