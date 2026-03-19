@@ -15,7 +15,7 @@
     String idEdit = request.getParameter("editId");
     String tituloForm = "Publicar Propiedad";
     String colorHeader = "bg-primary text-white";
-    String actionForm = "procesarPropiedad.jsp"; 
+    String actionForm = "../propiedades/procesarPropiedad.jsp"; 
     
     String edDireccion = "", edCiudad = "", edDesc = "", edEstado = "Disponible";
     double edPrecio = 0;
