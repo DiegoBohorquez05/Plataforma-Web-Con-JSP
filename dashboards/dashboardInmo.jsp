@@ -23,7 +23,7 @@
     if (idEdit != null && !idEdit.isEmpty()) {
         tituloForm = "Modificar Propiedad";
         colorHeader = "bg-warning text-dark";
-        actionForm = "modificarPropiedad.jsp"; 
+        actionForm = "../propiedades/actualizarPropiedad.jsp"; 
         
         try {
             String sqlEd = "SELECT * FROM propiedades WHERE id_propiedad = ?";

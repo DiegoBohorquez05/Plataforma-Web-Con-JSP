@@ -35,11 +35,23 @@
             conexion.close();
 
             // 5. Redirigir al dashboard con éxito
-            if (filasAfectadas > 0) {
-                response.sendRedirect("../dashboards/dashboardAdmin.jsp?res=ok_update");
-            } else {
-                response.sendRedirect("../dashboards/dashboardAdmin.jsp?res=error");
-            }
+            // 5. Redirigir al dashboard correspondiente
+if (filasAfectadas > 0) {
+    if (session.getAttribute("idAdmin") != null) {
+        // Si es Admin, va a su dashboard
+        response.sendRedirect("../dashboards/dashboardAdmin.jsp?res=ok_update");
+    } else if (session.getAttribute("idInmobiliaria") != null) {
+        // Si es Inmobiliaria, va al suyo
+        response.sendRedirect("../dashboards/dashboardInmo.jsp?res=ok_update");
+    } else {
+        // Por seguridad, si no hay sesión, al index
+        response.sendRedirect("../index.jsp");
+    }
+} else {
+    // Manejo de error: Detectar de nuevo quién falló para devolverlo a su sitio
+    String destinoError = (session.getAttribute("idAdmin") != null) ? "dashboardAdmin.jsp" : "dashboardInmo.jsp";
+    response.sendRedirect("../dashboards/" + destinoError + "?res=error");
+}
 
         } catch (Exception e) {
             out.print("Error al actualizar: " + e.getMessage());
